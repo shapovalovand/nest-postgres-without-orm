@@ -13,5 +13,4 @@ export class DatabaseService {
     this.logger.debug(`Executed query, result size ${result.rows.length}`);
     return result.rows;
   }
-
 }
