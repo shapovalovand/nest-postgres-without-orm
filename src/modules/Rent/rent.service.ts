@@ -18,6 +18,13 @@ export class RentService {
     this.insertInto(3, new Date(1), new Date(25 * 3600 * 1000));
     this.insertInto(4, new Date(1), new Date(25 * 3600 * 1000));
     this.insertInto(5, new Date(1), new Date(25 * 3600 * 1000));
+
+    this.insertInto(5, new Date('Dec 26, 2021'), new Date(2022, 0, 15));
+    this.insertInto(3, new Date('Dec 1, 2021'), new Date('Dec 8, 2021'));
+    this.insertInto(3, new Date('Dec 10, 2021'), new Date('Dec 17, 2021'));
+    this.insertInto(3, new Date('Dec 20, 2021'), new Date('Dec 30, 2021'));
+    this.insertInto(4, new Date('Dec 7, 2021'), new Date(2022, 0, 15));
+
     return true;
   }
 
@@ -30,22 +37,54 @@ export class RentService {
     ;`);
   }
 
-  async getAllRents() {
-    return await this.databaseService.executeQuery(`
-    SELECT * FROM RENT
-    ;`);
-  }
-
   async deleteEntity() {
     return await this.databaseService.executeQuery(`
     DROP TABLE RENT
     ;`);
   }
 
+  async workload_query() {
+    return await this.databaseService.executeQuery(`
+    SELECT * FROM RENT
+    WHERE (NOW() - INTERVAL '30 DAY') < END_DATE
+    ;`);
+  }
+
+  async avg_workload() {
+    const workload = await this.workload_query();
+    const res = new Map();
+    workload.forEach((_elem) => {
+      if (!res.has(_elem['car_id'])) {
+        res.set(_elem['car_id'], 0);
+      }
+
+      const end_date =
+        new Date() < _elem['end_date'] ? new Date() : _elem['end_date'];
+      const priorDate = new Date();
+      priorDate.setDate(priorDate.getDate() - 30);
+      const start_date =
+        priorDate > _elem['start_date'] ? priorDate : _elem['start_date'];
+      res.set(
+        _elem['car_id'],
+        res.get(_elem['car_id']) +
+          (end_date - start_date) / (1000 * 3600 * 24 * 30),
+      );
+    });
+    return Object.fromEntries(res);
+  }
+
+  async avg_all_workload() {
+    const avg: object = await this.avg_workload();
+    return (
+      Object.values(avg).reduce((prev, cur) => {
+        return prev + cur;
+      }) / Object.keys(avg).length
+    );
+  }
+
   async getAvailable(car_id: number) {
     const date = new Date(new Date().toLocaleDateString());
     date.setDate(date.getDate() - 3);
-    console.log(date);
     return await this.databaseService.executeQuery(`
     SELECT CAR_ID, END_DATE FROM
     (SELECT CAR_ID, END_DATE FROM RENT 
@@ -59,7 +98,6 @@ export class RentService {
   async calculateCost(start: string, end: string, car_id: string) {
     const car = car_id as unknown as number;
     const isAvailable = await this.getAvailable(car);
-    console.log('isAvailable', !isAvailable.length);
     if (!isAvailable.length) return null;
 
     const start_date = new Date(start);
