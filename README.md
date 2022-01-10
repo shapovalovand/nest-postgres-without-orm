@@ -2,6 +2,12 @@
 
 This is a tutorial project. 
 
+## For me to improve
+
+I would cover my modules with tests.
+Added error handler.
+Would add checks s.
+
 ## Development requirement:
 * subd: Postgres 9+
 * without using ORM libraries (pure sql)
