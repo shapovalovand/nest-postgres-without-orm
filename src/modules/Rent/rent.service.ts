@@ -110,9 +110,7 @@ export class RentService {
     )
       return null;
 
-    start_date.setDate(start_date.getDate());
     start_date.setHours(12, 0, 0);
-    end_date.setDate(end_date.getDate());
     end_date.setHours(12, 0, 0);
 
     let days = (end_date.valueOf() - start_date.valueOf()) / 8.64e7;
