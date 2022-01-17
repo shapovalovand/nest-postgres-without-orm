@@ -6,52 +6,23 @@ export class RentService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async initEntity() {
-    await this.databaseService.executeQuery(`
-    CREATE TABLE RENT
-    (ID SERIAL PRIMARY KEY    NOT NULL,
-    CAR_ID             INT    NOT NULL,
-    START_DATE         DATE   NOT NULL,
-    END_DATE           DATE   NOT NULL)
-    ;`);
-    this.insertInto(1, new Date(1), new Date(25 * 3600 * 1000));
-    this.insertInto(2, new Date(1), new Date(25 * 3600 * 1000));
-    this.insertInto(3, new Date(1), new Date(25 * 3600 * 1000));
-    this.insertInto(4, new Date(1), new Date(25 * 3600 * 1000));
-    this.insertInto(5, new Date(1), new Date(25 * 3600 * 1000));
-
-    this.insertInto(5, new Date('Dec 26, 2021'), new Date(2022, 0, 15));
-    this.insertInto(3, new Date('Dec 1, 2021'), new Date('Dec 8, 2021'));
-    this.insertInto(3, new Date('Dec 10, 2021'), new Date('Dec 17, 2021'));
-    this.insertInto(3, new Date('Dec 20, 2021'), new Date('Dec 30, 2021'));
-    this.insertInto(4, new Date('Dec 7, 2021'), new Date(2022, 0, 15));
-
-    return true;
+    return await this.databaseService.initEntity();
   }
 
   async insertInto(car_id: number, start_date: Date, end_date: Date) {
-    return await this.databaseService.executeQuery(`
-    INSERT INTO RENT (CAR_ID, START_DATE, END_DATE)
-    VALUES (${car_id}, 
-      (to_timestamp(${start_date.valueOf() / 1000.0})), 
-      (to_timestamp(${end_date.valueOf() / 1000.0})))
-    ;`);
+    return await this.databaseService.insertInto(car_id, start_date, end_date);
   }
 
   async deleteEntity() {
-    return await this.databaseService.executeQuery(`
-    DROP TABLE RENT
-    ;`);
+    return await this.databaseService.deleteEntity();
   }
 
-  async workload_query() {
-    return await this.databaseService.executeQuery(`
-    SELECT * FROM RENT
-    WHERE (NOW() - INTERVAL '30 DAY') < END_DATE
-    ;`);
+  async getAvailable(car_id: number) {
+    return await this.databaseService.getAvailable(car_id);
   }
 
-  async avg_workload() {
-    const workload = await this.workload_query();
+  async avgWorkload() {
+    const workload = await this.databaseService.workload_query();
     const res = new Map();
     workload.forEach((_elem) => {
       if (!res.has(_elem['car_id'])) {
@@ -73,8 +44,8 @@ export class RentService {
     return Object.fromEntries(res);
   }
 
-  async avg_all_workload() {
-    const avg: object = await this.avg_workload();
+  async avgAllWorkload() {
+    const avg: object = await this.databaseService.workload_query();
     return (
       Object.values(avg).reduce((prev, cur) => {
         return prev + cur;
@@ -82,23 +53,12 @@ export class RentService {
     );
   }
 
-  async getAvailable(car_id: number) {
-    const date = new Date(new Date().toLocaleDateString());
-    date.setDate(date.getDate() - 3);
-    return await this.databaseService.executeQuery(`
-    SELECT CAR_ID, END_DATE FROM
-    (SELECT CAR_ID, END_DATE FROM RENT 
-    WHERE CAR_ID = ${car_id}
-    ORDER BY END_DATE DESC
-    LIMIT 1
-    ) AS LATEST_DATE
-    WHERE END_DATE < (to_timestamp(${date.valueOf() / 1000.0}));`);
-  }
-
   async calculateCost(start: string, end: string, car_id: string) {
+    if (!start || !end || !car_id) throw new Error(`Not all data entered `);
+
     const car = car_id as unknown as number;
     const isAvailable = await this.getAvailable(car);
-    if (!isAvailable.length) return null;
+    if (!isAvailable.length) throw new Error(`No cars available`);
 
     const start_date = new Date(start);
     const end_date = new Date(end);
@@ -108,7 +68,7 @@ export class RentService {
       end_date.getDay() < 1 ||
       end_date.getDay() > 5
     )
-      return null;
+      throw new Error(`You can rent a car only on weekdays`);
 
     start_date.setHours(12, 0, 0);
     end_date.setHours(12, 0, 0);
