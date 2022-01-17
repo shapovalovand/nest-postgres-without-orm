@@ -17,13 +17,11 @@ describe('Module: rent.service . Class: RentService', () => {
   });
 
   describe('f: initEntity', () => {
-    it('should to be defined', async () => {
-      expect(await rentService.initEntity()).toBeDefined();
-    });
     it('should have been called and initialize entity rent', async () => {
       const mock = jest
         .spyOn(rentService, 'initEntity')
         .mockImplementation(async () => true);
+      expect(await rentService.initEntity()).toBeDefined();
       expect(await rentService.initEntity()).toBe(true);
       expect(mock).toHaveBeenCalled();
     });
@@ -56,35 +54,24 @@ describe('Module: rent.service . Class: RentService', () => {
     });
   });
 
-  describe('f: workload_query', () => {
+  describe('f: avgWorkload', () => {
     it('should to be defined', async () => {
       const mock = jest
-        .spyOn(rentService, 'workload_query')
+        .spyOn(rentService, 'avgWorkload')
         .mockImplementation(async () => []);
-      expect(await rentService.workload_query()).toBeDefined();
-      expect(await rentService.workload_query()).toStrictEqual([]);
+      expect(await rentService.avgWorkload()).toBeDefined();
       expect(mock).toHaveBeenCalled();
+      expect(await rentService.avgWorkload()).toStrictEqual([]);
     });
   });
 
-  describe('f: avg_workload', () => {
+  describe('f: avgAllWorkload', () => {
     it('should to be defined', async () => {
       const mock = jest
-        .spyOn(rentService, 'avg_workload')
-        .mockImplementation(async () => []);
-      expect(await rentService.avg_workload()).toBeDefined();
-      expect(mock).toHaveBeenCalled();
-      expect(await rentService.avg_workload()).toStrictEqual([]);
-    });
-  });
-
-  describe('f: avg_all_workload', () => {
-    it('should to be defined', async () => {
-      const mock = jest
-        .spyOn(rentService, 'avg_all_workload')
+        .spyOn(rentService, 'avgAllWorkload')
         .mockImplementation(async () => 1);
-      expect(await rentService.avg_all_workload()).toBeDefined();
-      expect(await rentService.avg_all_workload()).toBe(1);
+      expect(await rentService.avgAllWorkload()).toBeDefined();
+      expect(await rentService.avgAllWorkload()).toBe(1);
       expect(mock).toHaveBeenCalled();
     });
   });
