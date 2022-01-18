@@ -1,6 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseService } from '../db/database.service';
 import { RentService } from './rent.service';
+import { CreateRentDto } from './dto/create-rent.dto';
+
+const uploadRent = new CreateRentDto();
+uploadRent.car_id = 1;
+uploadRent.end_date = new Date('Dec 20, 2021');
+uploadRent.start_date = new Date('Dec 30, 2021');
 
 describe('Module: rent.service . Class: RentService', () => {
   let rentService: RentService;
@@ -16,43 +22,37 @@ describe('Module: rent.service . Class: RentService', () => {
     rentService = moduleRef.get<RentService>(RentService);
   });
 
-  describe('f: initEntity', () => {
-    it('should have been called and initialize entity rent', async () => {
+  // describe('f: initEntity', () => {
+  //   it('should have been called and initialize entity rent', async () => {
+  //     const mock = jest
+  //       .spyOn(rentService, 'initEntity')
+  //       .mockImplementation();
+  //     expect(await rentService.initEntity()).toBeDefined();
+  //     expect(await rentService.initEntity()).toBe();
+  //     expect(mock).toHaveBeenCalled();
+  //   });
+  // });
+
+  describe('f: create', () => {
+    it('should to be defined', async () => {
       const mock = jest
-        .spyOn(rentService, 'initEntity')
-        .mockImplementation(async () => true);
-      expect(await rentService.initEntity()).toBeDefined();
-      expect(await rentService.initEntity()).toBe(true);
+        .spyOn(rentService, 'create')
+        .mockImplementation(async () => []);
+      expect(await rentService.create(uploadRent)).toBeDefined();
       expect(mock).toHaveBeenCalled();
     });
   });
 
-  describe('f: insertInto', () => {
-    it('should to be defined', async () => {
-      const mock = jest
-        .spyOn(rentService, 'insertInto')
-        .mockImplementation(async () => []);
-      expect(
-        await rentService.insertInto(
-          1,
-          new Date('Dec 20, 2021'),
-          new Date('Dec 30, 2021'),
-        ),
-      ).toBeDefined();
-      expect(mock).toHaveBeenCalled();
-    });
-  });
-
-  describe('f: deleteEntity', () => {
-    it('should to be defined', async () => {
-      const mock = jest
-        .spyOn(rentService, 'deleteEntity')
-        .mockImplementation(async () => []);
-      expect(await rentService.deleteEntity()).toBeDefined();
-      expect(await rentService.deleteEntity()).toStrictEqual([]);
-      expect(mock).toHaveBeenCalled();
-    });
-  });
+  // describe('f: deleteEntity', () => {
+  //   it('should to be defined', async () => {
+  //     const mock = jest
+  //       .spyOn(rentService, 'deleteEntity')
+  //       .mockImplementation(async () => []);
+  //     expect(await rentService.deleteEntity()).toBeDefined();
+  //     expect(await rentService.deleteEntity()).toStrictEqual([]);
+  //     expect(mock).toHaveBeenCalled();
+  //   });
+  // });
 
   describe('f: avgWorkload', () => {
     it('should to be defined', async () => {

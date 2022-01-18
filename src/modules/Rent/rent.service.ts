@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../db/database.service';
+import { CreateRentDto } from './dto/create-rent.dto';
 
 @Injectable()
 export class RentService {
@@ -9,8 +10,12 @@ export class RentService {
     return await this.databaseService.initEntity();
   }
 
-  async insertInto(car_id: number, start_date: Date, end_date: Date) {
-    return await this.databaseService.insertInto(car_id, start_date, end_date);
+  async create(createRentDto: CreateRentDto) {
+    return await this.databaseService.insertInto(
+      createRentDto.car_id,
+      createRentDto.start_date,
+      createRentDto.end_date,
+    );
   }
 
   async deleteEntity() {
@@ -31,10 +36,13 @@ export class RentService {
 
       const end_date =
         new Date() < _elem['end_date'] ? new Date() : _elem['end_date'];
+
       const priorDate = new Date();
       priorDate.setDate(priorDate.getDate() - 30);
+
       const start_date =
         priorDate > _elem['start_date'] ? priorDate : _elem['start_date'];
+
       res.set(
         _elem['car_id'],
         res.get(_elem['car_id']) +
@@ -67,15 +75,19 @@ export class RentService {
       start_date.getDay() > 5 ||
       end_date.getDay() < 1 ||
       end_date.getDay() > 5
-    )
+    ) {
       throw new Error(`You can rent a car only on weekdays`);
+    }
 
     start_date.setHours(12, 0, 0);
     end_date.setHours(12, 0, 0);
-
     let days = (end_date.valueOf() - start_date.valueOf()) / 8.64e7;
     let cost = 0;
-    if (days > 29 || days <= 0) return null;
+
+    if (days > 29 || days <= 0) {
+      throw new Error(`Rent can only be from 1 to 29 days`);
+    }
+
     if (days > 17) {
       cost += (days - 17) * (1000 - 1000 * 0.15);
       days -= days - 17;
@@ -92,8 +104,6 @@ export class RentService {
       cost += (days - 4) * (1000 - 1000 * 0.05);
       days -= days - 4;
     }
-
-    this.insertInto(car, start_date, end_date);
 
     return cost + days * 1000;
   }
