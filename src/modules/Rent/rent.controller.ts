@@ -1,4 +1,11 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { ApiResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { RentService } from './rent.service';
 
@@ -13,7 +20,11 @@ export class RentController {
   })
   @ApiNotFoundResponse({ status: 404, description: 'Not Found' })
   async getInit(): Promise<any> {
-    return await this.rentService.initEntity();
+    try {
+      return await this.rentService.initEntity();
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('getDelete')
@@ -23,7 +34,11 @@ export class RentController {
   })
   @ApiNotFoundResponse({ status: 404, description: 'Not Found' })
   async getDelete(): Promise<any> {
-    return await this.rentService.deleteEntity();
+    try {
+      return await this.rentService.deleteEntity();
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('getAvailable')
@@ -33,7 +48,11 @@ export class RentController {
   })
   @ApiNotFoundResponse({ status: 404, description: 'Not Found' })
   async getAvailable(): Promise<any> {
-    return await this.rentService.getAvailable(2);
+    try {
+      return await this.rentService.getAvailable(2);
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('getAvgWorkload')
@@ -43,7 +62,11 @@ export class RentController {
   })
   @ApiNotFoundResponse({ status: 404, description: 'Not Found' })
   async getAvgWorkload(): Promise<any> {
-    return await this.rentService.avgWorkload();
+    try {
+      return await this.rentService.avgWorkload();
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('getAvgAllWorkload')
@@ -53,7 +76,11 @@ export class RentController {
   })
   @ApiNotFoundResponse({ status: 404, description: 'Not Found' })
   async getAvgAllWorkload(): Promise<any> {
-    return await this.rentService.avgAllWorkload();
+    try {
+      return await this.rentService.avgAllWorkload();
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('getCost') // example /rent/getCost?start_date=2021-12-12&end_date=2021-12-28
@@ -65,10 +92,15 @@ export class RentController {
   async getCost(@Query() query): Promise<any> {
     if (!query.start_date || !query.end_date || !query.car_id)
       throw new BadRequestException();
-    return await this.rentService.calculateCost(
-      query.start_date,
-      query.end_date,
-      query.car_id,
-    );
+
+    try {
+      return await this.rentService.calculateCost(
+        query.start_date,
+        query.end_date,
+        query.car_id,
+      );
+    } catch (e) {
+      throw new HttpException(e, HttpStatus.BAD_REQUEST);
+    }
   }
 }

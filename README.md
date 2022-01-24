@@ -22,6 +22,13 @@ Would add checks s.
 ```bash
 $ npm install
 ```
+## Migrations and seeds
+
+```bash
+$ npx knex migrate:latest
+$ npx knex seed:run
+```
+
 
 ## Running the app
 
