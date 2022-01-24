@@ -6,7 +6,7 @@ import { CreateRentDto } from './dto/create-rent.dto';
 export class RentService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async initEntity() {
+  async initEntity(): Promise<void> {
     return await this.databaseService.initEntity();
   }
 
@@ -18,15 +18,15 @@ export class RentService {
     );
   }
 
-  async deleteEntity() {
+  async deleteEntity(): Promise<void> {
     return await this.databaseService.deleteEntity();
   }
 
-  async getAvailable(car_id: number) {
+  async getAvailable(car_id: number): Promise<any[]> {
     return await this.databaseService.getAvailable(car_id);
   }
 
-  async avgWorkload() {
+  async avgWorkload(): Promise<any> {
     const workload = await this.databaseService.workload_query();
     const res = new Map();
     workload.forEach((_elem) => {
@@ -52,7 +52,7 @@ export class RentService {
     return Object.fromEntries(res);
   }
 
-  async avgAllWorkload() {
+  async avgAllWorkload(): Promise<number> {
     const avg: object = await this.databaseService.workload_query();
     return (
       Object.values(avg).reduce((prev, cur) => {
@@ -61,7 +61,11 @@ export class RentService {
     );
   }
 
-  async calculateCost(start: string, end: string, car_id: string) {
+  async calculateCost(
+    start: string,
+    end: string,
+    car_id: string,
+  ): Promise<number> {
     if (!start || !end || !car_id) throw new Error(`Not all data entered `);
 
     const car = car_id as unknown as number;
