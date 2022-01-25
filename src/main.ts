@@ -19,9 +19,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('REST API')
-    .setDescription('The REST API description')
+    .setDescription(`The REST API for car's entity`)
     .setVersion('1.0')
-    .addTag('rest')
+    .addTag('car')
     .build();
 
   const options: SwaggerDocumentOptions = {
