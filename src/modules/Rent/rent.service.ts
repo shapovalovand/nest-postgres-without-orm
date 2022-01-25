@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../db/database.service';
 import { CreateRentDto } from './dto/create-rent.dto';
+import { UploadRentDto } from './dto/upload-rent.dto';
 
 @Injectable()
 export class RentService {
@@ -61,19 +62,12 @@ export class RentService {
     );
   }
 
-  async calculateCost(
-    start: string,
-    end: string,
-    car_id: string,
-  ): Promise<number> {
-    if (!start || !end || !car_id) throw new Error(`Not all data entered `);
+  async calculateCost(uploadRent: UploadRentDto): Promise<number> {
+    if (!uploadRent.start_date || !uploadRent.end_date)
+      throw new Error(`Not all data entered `);
 
-    const car = car_id as unknown as number;
-    const isAvailable = await this.getAvailable(car);
-    if (!isAvailable.length) throw new Error(`No cars available`);
-
-    const start_date = new Date(start);
-    const end_date = new Date(end);
+    const start_date = new Date(uploadRent.start_date);
+    const end_date = new Date(uploadRent.end_date);
     if (
       start_date.getDay() < 1 ||
       start_date.getDay() > 5 ||
