@@ -14,6 +14,7 @@ Would add checks s.
 
 ## Stack: 
 * nestJS
+* knex
 * postgresql
 * docker-compose
 

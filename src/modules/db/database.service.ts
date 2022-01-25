@@ -1,27 +1,11 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Pool } from 'pg';
+import { Injectable } from '@nestjs/common';
 import { InjectKnex, Knex } from 'nestjs-knex';
 
 @Injectable()
 export class DatabaseService {
-  private readonly logger = new Logger(DatabaseService.name);
+  constructor(@InjectKnex() private readonly knex: Knex) {}
 
-  constructor(
-    @Inject('DATABASE_POOL') private pool: Pool,
-    @InjectKnex() private readonly knex: Knex,
-  ) {}
-
-  private async executeQuery(
-    queryText: string,
-    values: any[] = [],
-  ): Promise<any[]> {
-    this.logger.debug(`Executing query: ${queryText} (${values})`);
-    const result = await this.pool.query(queryText, values);
-    this.logger.debug(`Executed query, result size ${result.rows.length}`);
-    return result.rows;
-  }
-
-  async initEntity() {
+  async initEntity(): Promise<void> {
     try {
       return await this.knex.schema.createTable('rent', function (table) {
         table.increments('id');
@@ -46,7 +30,7 @@ export class DatabaseService {
     }
   }
 
-  async deleteEntity() {
+  async deleteEntity(): Promise<void> {
     try {
       return await this.knex.schema.dropTable('rent');
     } catch (e) {
@@ -54,7 +38,7 @@ export class DatabaseService {
     }
   }
 
-  async workload_query() {
+  async workload_query(): Promise<any[]> {
     try {
       return await this.knex
         .select()
@@ -65,7 +49,7 @@ export class DatabaseService {
     }
   }
 
-  async getAvailable(car_id: number) {
+  async getAvailable(car_id: number): Promise<any[]> {
     try {
       const date = new Date(new Date().toLocaleDateString());
       date.setDate(date.getDate() - 3);

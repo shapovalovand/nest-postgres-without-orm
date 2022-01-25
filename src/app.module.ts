@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { KnexModule } from 'nestjs-knex';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,17 +12,11 @@ import { RentModule } from './modules/Rent/rent.module';
       envFilePath: ['.env'],
     }),
     KnexModule.forRootAsync({
-      // useFactory: (configService: ConfigService) => ({
       useFactory: () => ({
         config: {
           client: 'postgresql',
           useNullAsDefault: true,
-          // connection: ':memory:',
           connection: {
-            // host: configService.get<string>('POSTGRES_HOST'),
-            // user: configService.get<string>('POSTGRES_USER'),
-            // password: configService.get<string>('POSTGRES_PASSWORD'),
-            // database: configService.get<string>('POSTGRES_DB'),
             host: 'localhost',
             user: 'root',
             password: 'root_password',

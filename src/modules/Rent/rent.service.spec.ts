@@ -22,16 +22,14 @@ describe('Module: rent.service . Class: RentService', () => {
     rentService = moduleRef.get<RentService>(RentService);
   });
 
-  // describe('f: initEntity', () => {
-  //   it('should have been called and initialize entity rent', async () => {
-  //     const mock = jest
-  //       .spyOn(rentService, 'initEntity')
-  //       .mockImplementation();
-  //     expect(await rentService.initEntity()).toBeDefined();
-  //     expect(await rentService.initEntity()).toBe();
-  //     expect(mock).toHaveBeenCalled();
-  //   });
-  // });
+  describe('f: initEntity', () => {
+    it('should have been defined', async () => {
+      const mock = jest
+        .spyOn(rentService, 'initEntity')
+        .mockImplementation(() => Promise.resolve());
+      expect(mock).toBeDefined();
+    });
+  });
 
   describe('f: create', () => {
     it('should to be defined', async () => {
@@ -43,16 +41,25 @@ describe('Module: rent.service . Class: RentService', () => {
     });
   });
 
-  // describe('f: deleteEntity', () => {
-  //   it('should to be defined', async () => {
-  //     const mock = jest
-  //       .spyOn(rentService, 'deleteEntity')
-  //       .mockImplementation(async () => []);
-  //     expect(await rentService.deleteEntity()).toBeDefined();
-  //     expect(await rentService.deleteEntity()).toStrictEqual([]);
-  //     expect(mock).toHaveBeenCalled();
-  //   });
-  // });
+  describe('f: deleteEntity', () => {
+    it('should to be defined', async () => {
+      const mock = jest
+        .spyOn(rentService, 'deleteEntity')
+        .mockImplementation(() => Promise.resolve());
+      expect(mock).toBeDefined();
+    });
+  });
+
+  describe('f: getAvailable', () => {
+    it('should to be defined', async () => {
+      const mock = jest
+        .spyOn(rentService, 'getAvailable')
+        .mockImplementation(async () => []);
+      expect(await rentService.getAvailable(1)).toBeDefined();
+      expect(await rentService.getAvailable(1)).toStrictEqual([]);
+      expect(mock).toHaveBeenCalled();
+    });
+  });
 
   describe('f: avgWorkload', () => {
     it('should to be defined', async () => {
@@ -72,17 +79,6 @@ describe('Module: rent.service . Class: RentService', () => {
         .mockImplementation(async () => 1);
       expect(await rentService.avgAllWorkload()).toBeDefined();
       expect(await rentService.avgAllWorkload()).toBe(1);
-      expect(mock).toHaveBeenCalled();
-    });
-  });
-
-  describe('f: getAvailable', () => {
-    it('should to be defined', async () => {
-      const mock = jest
-        .spyOn(rentService, 'getAvailable')
-        .mockImplementation(async () => []);
-      expect(await rentService.getAvailable(1)).toBeDefined();
-      expect(await rentService.getAvailable(1)).toStrictEqual([]);
       expect(mock).toHaveBeenCalled();
     });
   });
